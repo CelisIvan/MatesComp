@@ -15,6 +15,7 @@ def buildStateTransition(x,letter,num,d):
             lst.append(ele) # adding the element 
     elif(n==0):
         lst.insert(0,"None")
+        lst.sort()
     if(letter=='a'):
         d[x].insert(0,lst)
     elif(letter=='b'):
@@ -24,17 +25,22 @@ def buildStateTransition(x,letter,num,d):
     return None
 
 def buildNFATF (d,closure,m):
-    e1 = set()
-    e2 = set()
+    
     for i in range(num):
-        print("i"+str(i))
         for j in range(2):
-            for item in closure[i]:
-                e1.update(d[a-1][j])
-                for item in e1:
-                    b=item
-                    e2.update(closure[b-1])
-            m[i][j].extend(e2)
+            e1 = set()
+            e2 = set()
+            for item1 in closure[i]:
+                e1.update(closure[item1-1])
+            for item2 in e1:
+                e2.update(d[item2-1][j])
+                e3 = set()
+            for item3 in e2:
+                e3.update(closure[item3-1])
+            if(j==0):
+                m[i].insert(0,list((e3)))
+            elif(j==1):
+                m[i].insert(1,list((e3)))
     return None
 
 num=int(input("Enter how many states: "))
@@ -44,7 +50,8 @@ for x in range(0, num):
     for letter in 'abE':
             buildStateTransition(x,letter,num,d)
 print("E - TRANSITION FUNCTION")
-print("          a    b   epsilon")
+print("          a  |  b  | epsilon")
+print("_____________________________")
 for k in range(num):
     print("state q"+str(k+1)+":"+str(d[k]))
 
@@ -56,17 +63,16 @@ for j in range(num):
     for item in d[j][2]:
         closure[j].append(item)
 
-print (closure)
-
 for x in range(num):
     print("E - closure (q"+str(x+1)+"):"+str(closure[x]))
 print("------------------------------------")
 
 m=[[]for k in range(num)]
 
-#buildNFATF(d,closure,m)
+buildNFATF(d,closure,m)
 
-print("E - TRANSITION FUNCTION")
-print("          a    b")
+print("TRANSITION FUNCTION")
+print("          a  |  b")
+print("----------------------")
 for k in range(num):
     print("state q"+str(k+1)+":"+str(m[k]))
